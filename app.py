@@ -10,17 +10,21 @@ app = App(token=os.environ["SLACK_BOT_TOKEN"])
 user_client = WebClient(token=os.environ["SLACK_USER_TOKEN"])
 slack_user_id = os.environ["SLACK_USER_ID"]
 
+TRIGGER_WORDS = ["ufc"]
+ADDITIONAL_WORDS = ["code", "codes"]
+RESPONSE_TEXT = "Me please!"
+
 @app.event("message")
 def auto_respond(event, say):
     channel = event["channel"]
     ts = event["ts"]
     text = event.get("text", "").lower()
     
-    if "ufc" in text and ("code" in text or "codes" in text):
+    if any(word in text for word in TRIGGER_WORDS) and any(word in text for word in ADDITIONAL_WORDS):
         try:
             user_client.chat_postMessage(
                 channel=channel,
-                text="Me please!",
+                text=RESPONSE_TEXT,
                 thread_ts=ts,
                 username=slack_user_id
             )
